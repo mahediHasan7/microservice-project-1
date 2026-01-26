@@ -47,6 +47,7 @@ public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {
         try {
+            // Deserializing the JSON payload from the HTTP request's input stream into a LoginRequest object using Jackson's ObjectMapper.
             LoginRequest loginRequest = new ObjectMapper().readValue(request.getInputStream(), LoginRequest.class);
 
             // Using AuthenticationManager, we call authenticate method which returns Authentication obj
@@ -70,6 +71,7 @@ public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 
 
         assert auth.getPrincipal() != null;
+        //  auth.getPrincipal() providing the authenticated user's details (e.g., username from the User object). This ensures you're using the verified identity after authentication, not the raw input from the HttpServletRequest
         String userEmail = ((User) auth.getPrincipal()).getUsername();
         UserResponseDto user = userService.findUserByEmail(userEmail);
         String userId = user.getId().toString();
