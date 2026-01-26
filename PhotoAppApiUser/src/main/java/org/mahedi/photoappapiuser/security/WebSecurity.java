@@ -23,6 +23,14 @@ public class WebSecurity {
     private final UserService userService;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
+    //! READ THIS TO UNDERSTAND THE WHOLE FLOW:
+    // WebSecurity.configure() (sets up AuthenticationManager and adds AuthenticationFilter)
+    // -> Login Request -> AuthenticationFilter.attemptAuthentication()
+    // -> AuthenticationManager.authenticate() -> UserService.loadUserByUsername(email) (queries DB for UserDetails with encoded password)
+    // -> Password Comparison (BCryptPasswordEncoder.matches(rawPasswordFromRequest, encodedPasswordFromDB))
+    // -> Success (Authentication object) or Failure (AuthenticationException)
+    // -> successfulAuthentication() (generates JWT).
+
     // SecurityFilterChain configures Spring Security's HTTP security settings, and it's automatically used by Spring Boot to apply these security rules to incoming requests.
     @Bean
     protected SecurityFilterChain configure(HttpSecurity http) {
