@@ -66,3 +66,6 @@ spring-boot-*.log
 
 core/volumes/
 core/volumes/**
+
+rabbitmq_data/
+rabbitmq_logs/
