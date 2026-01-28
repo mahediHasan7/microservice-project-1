@@ -27,4 +27,9 @@ public class UserController {
         UserResponseDto userResponseDto = userService.createUser(userCreateDto);
         return ResponseEntity.status(HttpStatus.CREATED).body(userResponseDto);
     }
+
+    @ExceptionHandler(RuntimeException.class)
+    public ResponseEntity<String> handleUserCreationException(RuntimeException e) {
+        return ResponseEntity.badRequest().body(e.getMessage());
+    }
 }

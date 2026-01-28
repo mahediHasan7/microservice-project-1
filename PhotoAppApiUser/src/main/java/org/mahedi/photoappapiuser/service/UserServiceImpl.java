@@ -7,6 +7,7 @@ import org.mahedi.photoappapiuser.dto.UserResponseDto;
 import org.mahedi.photoappapiuser.entity.User;
 import org.mahedi.photoappapiuser.mapper.UserMapper;
 import org.mahedi.photoappapiuser.repository.UserRepository;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -26,9 +27,13 @@ public class UserServiceImpl implements UserService {
         User user = userMapper.toEntity(userCreateDto);
         // Encrypt password before save
         user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
-        User savedUser = userRepository.save(user);
-        return userMapper.toUserResponseDto(savedUser);
 
+        try {
+            User savedUser = userRepository.save(user);
+            return userMapper.toUserResponseDto(savedUser);
+        } catch (DataIntegrityViolationException e) {
+            throw new RuntimeException("User could not be saved: " + e.getMessage());
+        }
     }
 
     @Override
