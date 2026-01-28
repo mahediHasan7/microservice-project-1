@@ -67,7 +67,7 @@ public class AuthorizationHeaderFilter extends AbstractGatewayFilterFactory<Auth
         return (exchange, chain) -> {
             ServerHttpRequest request = exchange.getRequest();
             if (!request.getHeaders().containsHeader(HttpHeaders.AUTHORIZATION)) {
-                return onError(exchange, "No authorization header");
+                return onError(exchange, "No Authorization header provided");
             }
 
             // get the jason web token
