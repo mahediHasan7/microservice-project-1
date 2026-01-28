@@ -49,7 +49,7 @@ public class WebSecurity {
 
         http.authorizeHttpRequests(authManager -> {
             authManager
-                    .requestMatchers(("/users")).access(new WebExpressionAuthorizationManager(
+                    .requestMatchers(("/users/**")).access(new WebExpressionAuthorizationManager(
                             "hasIpAddress('" + environment.getProperty("gateway.ip") + "')"))
                     .requestMatchers("/h2-console/**").permitAll();
 
