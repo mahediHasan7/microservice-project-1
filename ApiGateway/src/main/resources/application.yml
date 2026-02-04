@@ -30,7 +30,7 @@ spring:
         webflux:
           discovery:
             locator:
-              enabled: true
+              enabled: false
               lower-case-service-id: true
           routes:
 
@@ -38,7 +38,7 @@ spring:
             - id: users-ws
               uri: lb://users-ws
               predicates:
-                - Path=/users/status/check
+                - Path=/users-ws/users/**
                 - Method=GET
               #                - Header=Authorization,Bearer (.*) # implemented inside AuthorizationHeaderFilter class
               filters:
@@ -76,10 +76,10 @@ spring:
             - id: albums-ws-users-albums
               uri: lb://albums-ws
               predicates:
-                - Path=albums-ws/albums/users/{userId}
+                - Path=/albums-ws/albums/users/{userId}
                 - Method=GET
               filters:
-                - RewritePath=albums-ws/albums/users/(?<id>[^/]+),/albums/users/${userId}
+                - RewritePath=/albums-ws/albums/users/(?<userId>[^/]+),/albums/users/$\{userId}
 
 
 eureka:
