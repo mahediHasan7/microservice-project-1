@@ -1,0 +1,120 @@
+server:
+  port: 8082
+
+spring:
+  profiles:
+    active: git
+  config:
+    # Spring Cloud config server configuration
+    import: "optional:configserver:http://localhost:8099"
+  application:
+    name: api-gateway
+
+  # Config for Rabbit MQ
+  rabbitmq:
+    host: localhost
+    port: 5672
+    username: admin
+    password: admin
+
+  # Spring Cloud config server configuration
+  cloud:
+    config:
+      name: PhotoAppConfigServer
+      username: ${config_server_username}
+      password: ${config_server_password}
+    #      uri: http://localhost:8099
+
+    gateway:
+      server:
+        webflux:
+          discovery:
+            locator:
+              enabled: true
+              lower-case-service-id: true
+          routes:
+
+            # User status
+            - id: users-ws
+              uri: lb://users-ws
+              predicates:
+                - Path=/users/status/check
+                - Method=GET
+              #                - Header=Authorization,Bearer (.*) # implemented inside AuthorizationHeaderFilter class
+              filters:
+                - RewritePath=/users-ws/(?<segment>.*),/$\{segment}
+                - AuthorizationHeaderFilter
+
+            # Sign up
+            - id: users-ws
+              uri: lb://users-ws
+              predicates:
+                - Path=/users
+                - Method=POST
+              filters:
+                - RewritePath=/users-ws/(?<segment>.*),/$\{segment}
+
+            # Login
+            - id: users-ws
+              uri: lb://users-ws
+              predicates:
+                - Path=/users/login
+                - Method=POST
+              filters:
+                - RewritePath=/users-ws/(?<segment>.*),/$\{segment}
+
+            # H2-console
+            - id: users-ws
+              uri: lb://users-ws
+              predicates:
+                - Path=/users-ws/h2-console/**
+                - Method=GET
+              filters:
+                - RewritePath=/users-ws/(?<segment>.*),/$\{segment}
+
+            # Albums-ws users/id/albums
+            - id: albums-ws-users-albums
+              uri: lb://albums-ws
+              predicates:
+                - Path=albums-ws/albums/users/{userId}
+                - Method=GET
+              filters:
+                - RewritePath=albums-ws/albums/users/(?<id>[^/]+),/albums/users/${userId}
+
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8010/eureka
+
+token.secret: YWJjZGVmZ2hpamsxMjM0NTY3ODkwMTIzNDU2Nzg5MDEyMzQ1Njc4OTA
+
+
+
+
+
+# Notes:
+# discovery locator enabled: It automatically creates routes for all services registered in the discovery service, using their service IDs as route URIs (e.g., lb://users-ws).
+# routes defines manual route configurations as a list of route objects.
+# uri: lb://users-ws specifies the target URI for the route
+# predicates: - Path=/users/** defines matching conditions for incoming requests (e.g., paths starting with /users/ trigger this route).
+# The RewritePath filter is used to modify the request path before forwarding it to the downstream service. RewritePath=<regexp>,<replacement> where <regexp> is a regex pattern to match the incoming path, and <replacement> is the new path to use.
+# ex: RewritePath=/users-ws/users/status/check,/users/status/check, it expects /users-ws/users/status/check, and then it will modify this to a new path /users/status/check (removed users-ws)
+# The regex won't match the incoming path for example: /users/status/check (since it expects /users-ws/users/status/check), hence no modification
+#
+# Some example of /users-ws/(?<segment>.*)
+# Input: /users-ws/status/check
+# Match: segment captures status/check
+# Output: /status/check
+#
+# Input: /users-ws/ (empty after prefix)
+# Match: segment captures empty string
+# Output: /
+#
+# Input: /users/status/check (no prefix match)
+# No match: No rewrite occurs, path remains /users/status/check
+#
+#  Predicate : Header
+#  The Header=Authorization,Bearer (.*) predicate requires a Bearer token in the Authorization header for the route to match.
+#  To test that, the discovery locator need to be disabled (enabled: false),
+#  Now, if we don't provide Authorization header with the request, the manual routes enforce predicates, preventing unauthorized requests.
