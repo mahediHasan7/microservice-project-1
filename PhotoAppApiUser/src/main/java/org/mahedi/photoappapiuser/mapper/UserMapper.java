@@ -1,5 +1,6 @@
 package org.mahedi.photoappapiuser.mapper;
 
+import org.mahedi.photoappapiuser.dto.AlbumResponseDto;
 import org.mahedi.photoappapiuser.dto.UserCreateDto;
 import org.mahedi.photoappapiuser.dto.UserResponseDto;
 import org.mahedi.photoappapiuser.dto.UserUpdateDto;
@@ -7,6 +8,8 @@ import org.mahedi.photoappapiuser.entity.User;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.convention.MatchingStrategies;
 import org.springframework.stereotype.Component;
+
+import java.util.List;
 
 @Component
 public class UserMapper {
@@ -23,6 +26,12 @@ public class UserMapper {
 
     public UserResponseDto toUserResponseDto(User user) {
         return modelMapper.map(user, UserResponseDto.class);
+    }
+
+    public UserResponseDto toUserResponseDtoWithAlbums(User user, List<AlbumResponseDto> albums) {
+        UserResponseDto userResponseDto = modelMapper.map(user, UserResponseDto.class);
+        userResponseDto.setAlbums(albums);
+        return userResponseDto;
     }
 
     public void updateEntityFromDto(UserUpdateDto userUpdateDto, User user) {

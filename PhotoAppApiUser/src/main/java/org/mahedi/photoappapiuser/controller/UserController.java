@@ -28,6 +28,12 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.CREATED).body(userResponseDto);
     }
 
+    @GetMapping("/{userId}")
+    public ResponseEntity<UserResponseDto> getUserDetails(@PathVariable Long userId) {
+        UserResponseDto userResponseDto = userService.findUserById(userId);
+        return ResponseEntity.status(HttpStatus.OK).body(userResponseDto);
+    }
+
     @ExceptionHandler(RuntimeException.class)
     public ResponseEntity<String> handleUserCreationException(RuntimeException e) {
         return ResponseEntity.badRequest().body(e.getMessage());
