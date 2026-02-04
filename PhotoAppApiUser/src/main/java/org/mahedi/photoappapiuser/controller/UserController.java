@@ -19,7 +19,7 @@ public class UserController {
 
     @GetMapping("/status/check")
     public String getStatus() {
-        return "users-ws is running on " + environment.getProperty("local.server.port");
+        return "users-ws is running on " + environment.getProperty("local.server.port") + "\nsecret token: " + environment.getProperty("token.secret");
     }
 
     @PostMapping
