@@ -1,10 +1,8 @@
 package org.mahedi.photoappalbums.controller;
 
+import lombok.RequiredArgsConstructor;
 import org.mahedi.photoappalbums.dto.AlbumResponseDto;
 import org.mahedi.photoappalbums.service.AlbumsService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -15,20 +13,16 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/albums")
+@RequiredArgsConstructor
 public class AlbumsController {
-
-    @Autowired
-    AlbumsService albumsService;
-    Logger logger = LoggerFactory.getLogger(this.getClass());
+    private final AlbumsService albumsService;
 
     @GetMapping("/users/{userId}")
     public List<AlbumResponseDto> userAlbums(@PathVariable String userId) {
-        List<AlbumResponseDto> albumsEntities = albumsService.getAlbums(userId);
-        if (albumsEntities == null || albumsEntities.isEmpty()) {
-            return Collections.<AlbumResponseDto>emptyList();
+        List<AlbumResponseDto> albums = albumsService.getAlbums(userId);
+        if (albums == null || albums.isEmpty()) {
+            return Collections.emptyList();
         }
-
-        logger.info("Returning {} albums", albumsEntities.size());
-        return albumsEntities;
+        return albums;
     }
 }
