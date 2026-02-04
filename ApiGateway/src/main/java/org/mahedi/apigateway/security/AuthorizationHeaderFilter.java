@@ -5,7 +5,6 @@ import io.jsonwebtoken.JwtParser;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import org.jspecify.annotations.NullMarked;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.gateway.filter.GatewayFilter;
 import org.springframework.cloud.gateway.filter.factory.AbstractGatewayFilterFactory;
 import org.springframework.core.env.Environment;
@@ -25,11 +24,11 @@ import java.util.Base64;
 @NullMarked
 public class AuthorizationHeaderFilter extends AbstractGatewayFilterFactory<AuthorizationHeaderFilter.Config> {
 
-    @Autowired
-    private Environment environment;
+    private final Environment environment;
 
-    public AuthorizationHeaderFilter() {
+    public AuthorizationHeaderFilter(Environment environment) {
         super(Config.class);
+        this.environment = environment;
     }
 
 
