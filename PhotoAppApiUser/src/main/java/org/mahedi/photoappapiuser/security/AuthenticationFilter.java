@@ -90,6 +90,7 @@ public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 
         response.addHeader("Authorization", token);
         response.addHeader("userId", userId);
+        response.addHeader("tokenSecret", environment.getProperty("token.secret"));
     }
 
 }
