@@ -3,8 +3,8 @@ services:
     image: rabbitmq:3-management
     container_name: rabbitmq
     ports:
-      - "5672:5672"   # AMQP port
-      - "15672:15672" # Management console port
+      - '5672:5672' # AMQP port
+      - '15672:15672' # Management console port
     environment:
       RABBITMQ_DEFAULT_USER: admin
       RABBITMQ_DEFAULT_PASS: admin
@@ -14,10 +14,6 @@ services:
     networks:
       - rabbitmq_network
     restart: unless-stopped
-
-volumes:
-  rabbitmq_data:
-  rabbitmq_logs:
 
 networks:
   rabbitmq_network:
