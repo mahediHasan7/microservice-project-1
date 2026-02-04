@@ -43,17 +43,20 @@ public class WebSecurity {
 
         // AuthenticationFilter instance (used AuthenticationManager instance)
         AuthenticationFilter authenticationFilter = new AuthenticationFilter(userService, environment, authenticationManager);
-        authenticationFilter.setFilterProcessesUrl(environment.getProperty("login.url.path", "/login"));
+        authenticationFilter.setFilterProcessesUrl(environment.getProperty("login.url.path", "/users/login"));
 
         http.csrf(csrf -> csrf.disable());
 
         http.authorizeHttpRequests(authManager -> {
             authManager
+                    // please make sure the request coming in /h2-console/**, not /users/h2-console/** or /users-ws/h2-console/**
+                    // use RewritePath=/users-ws/(?<segment>.*),/$\{segment} in ApiGateway config file for Path=/users-ws/h2-console/**
+                    .requestMatchers("/h2-console/**").permitAll()
                     .requestMatchers(("/users/**")).access(new WebExpressionAuthorizationManager(
-                            "hasIpAddress('" + environment.getProperty("gateway.ip") + "')"))
-                    .requestMatchers("/h2-console/**").permitAll();
+                            "hasIpAddress('" + environment.getProperty("gateway.ip") + "')"));
 
         });
+
 
         // configuring sessions as STATELESS ensures the server does not maintain session state between requests. This is ideal for RESTful APIs, as each request must include all necessary information (e.g., via tokens like JWT), improving scalability, reliability, and ease of horizontal scaling across servers.
         http.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
