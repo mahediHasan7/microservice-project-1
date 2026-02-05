@@ -1,5 +1,7 @@
 package org.mahedi.photoappapiuser;
 
+import feign.Logger;
+import org.mahedi.photoappapiuser.client.FeignErrorDecoder;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
@@ -27,5 +29,15 @@ public class PhotoAppApiUserApplication {
     @LoadBalanced
     RestTemplate getRestTemplate() {
         return new RestTemplate();
+    }
+
+    @Bean
+    Logger.Level feignLoggerLevel() {
+        return Logger.Level.FULL;  // Options: NONE, BASIC, HEADERS, FULL
+    }
+
+    @Bean
+    FeignErrorDecoder feignErrorDecoder() {
+        return new FeignErrorDecoder();
     }
 }
