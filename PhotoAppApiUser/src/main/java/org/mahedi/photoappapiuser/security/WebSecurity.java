@@ -5,6 +5,7 @@ import org.mahedi.photoappapiuser.service.UserService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -52,6 +53,8 @@ public class WebSecurity {
                     // please make sure the request coming in /h2-console/**, not /users/h2-console/** or /users-ws/h2-console/**
                     // use RewritePath=/users-ws/(?<segment>.*),/$\{segment} in ApiGateway config file for Path=/users-ws/h2-console/**
                     .requestMatchers("/h2-console/**").permitAll()
+                    .requestMatchers(HttpMethod.GET, "/actuator/circuitbreakerevents").permitAll()
+                    .requestMatchers(HttpMethod.GET, "/actuator/retryevents").permitAll()
                     .requestMatchers(("/users/**")).access(new WebExpressionAuthorizationManager(
                             "hasIpAddress('" + environment.getProperty("gateway.ip") + "')"));
 
