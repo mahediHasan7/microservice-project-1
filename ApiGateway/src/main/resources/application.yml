@@ -34,7 +34,7 @@ spring:
               lower-case-service-id: true
           routes:
 
-            # User status
+            # users-ws User status
             - id: users-ws
               uri: lb://users-ws
               predicates:
@@ -45,7 +45,7 @@ spring:
                 - RewritePath=/users-ws/(?<segment>.*),/$\{segment}
                 - AuthorizationHeaderFilter
 
-            # Sign up
+            # users-ws Sign up
             - id: users-ws
               uri: lb://users-ws
               predicates:
@@ -54,7 +54,7 @@ spring:
               filters:
                 - RewritePath=/users-ws/(?<segment>.*),/$\{segment}
 
-            # Login
+            # users-ws Login
             - id: users-ws
               uri: lb://users-ws
               predicates:
@@ -63,11 +63,20 @@ spring:
               filters:
                 - RewritePath=/users-ws/(?<segment>.*),/$\{segment}
 
-            # H2-console
+            # users-ws H2-console
             - id: users-ws
               uri: lb://users-ws
               predicates:
                 - Path=/users-ws/h2-console/**
+                - Method=GET
+              filters:
+                - RewritePath=/users-ws/(?<segment>.*),/$\{segment}
+
+            # users-ws actuator
+            - id: users-ws
+              uri: lb://users-ws
+              predicates:
+                - Path=/users-ws/actuator/**
                 - Method=GET
               filters:
                 - RewritePath=/users-ws/(?<segment>.*),/$\{segment}
